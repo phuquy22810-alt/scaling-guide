@@ -1,0 +1,206 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐍 Rắn Săn Mồi</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div>
+      <h1>🐍 Rắn Săn Mồi</h1>
+      <p>Vuốt màn hình để điều khiển</p>
+    </div>
+
+    <button id="gearBtn">⚙️</button>
+  </header>
+
+  <div class="hud">
+    <div>
+      <span>Điểm</span>
+      <b id="score">0</b>
+    </div>
+
+    <div>
+      <span>Màn</span>
+      <b id="level">1 / 12</b>
+    </div>
+
+    <div>
+      <span>Kỷ lục</span>
+      <b id="best">0</b>
+    </div>
+  </div>
+
+  <main id="gameWrap">
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="message">
+
+      <div class="message-card">
+
+        <div id="messageIcon">🐍</div>
+
+        <h2 id="messageTitle">
+          Sẵn sàng?
+        </h2>
+
+        <p id="messageText">
+          Vuốt trên màn hình để điều khiển rắn.
+        </p>
+
+        <button id="startBtn">
+          Bắt đầu
+        </button>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <div class="level-info">
+
+    <span id="levelName">
+      Đồng cỏ khởi đầu
+    </span>
+
+    <span id="target">
+      Mục tiêu: 5 mồi
+    </span>
+
+  </div>
+
+
+  <!-- CÀI ĐẶT -->
+
+  <aside id="settings">
+
+    <div class="settings-head">
+
+      <h2>⚙️ Cài đặt</h2>
+
+      <button id="closeSettings">
+        ×
+      </button>
+
+    </div>
+
+
+    <label>
+
+      Tốc độ rắn
+
+      <div class="range-row">
+
+        <input
+          id="speedRange"
+          type="range"
+          min="1"
+          max="10"
+          value="5"
+        >
+
+        <b id="speedValue">5</b>
+
+      </div>
+
+    </label>
+
+
+    <label class="switch-row">
+
+      <span>Chướng ngại vật</span>
+
+      <input
+        id="obstacleToggle"
+        type="checkbox"
+        checked
+      >
+
+    </label>
+
+
+    <label class="switch-row">
+
+      <span>Âm thanh ăn mồi</span>
+
+      <input
+        id="eatSoundToggle"
+        type="checkbox"
+        checked
+      >
+
+    </label>
+
+
+    <label class="switch-row">
+
+      <span>Nhạc nền</span>
+
+      <input
+        id="musicToggle"
+        type="checkbox"
+        checked
+      >
+
+    </label>
+
+
+    <label class="switch-row">
+
+      <span>Rung khi chơi</span>
+
+      <input
+        id="vibrateToggle"
+        type="checkbox"
+        checked
+      >
+
+    </label>
+
+<label>
+  <strong>🌍 Bối cảnh</strong>
+
+  <select id="backgroundSelect">
+    <option value="forest">🌲 Rừng</option>
+    <option value="mansion">🏰 Dinh thự</option>
+    <option value="tunnel">🚇 Đường hầm</option>
+    <option value="house">🏠 Nhà</option>
+    <option value="playground">🎡 Khu vui chơi</option>
+  </select>
+</label>
+
+<label>
+  <strong>🧱 Mức độ chướng ngại vật</strong>
+
+  <select id="obstacleLevel">
+    <option value="easy">🟢 Dễ</option>
+    <option value="medium" selected>🟡 Trung bình</option>
+    <option value="hard">🔴 Khó</option>
+  </select>
+</label>
+    <button id="restartBtn">
+      🔄 Chơi lại màn hiện tại
+    </button>
+
+  </aside>
+
+
+  <div id="toast"></div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
+```

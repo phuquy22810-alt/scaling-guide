@@ -1,0 +1,954 @@
+/* =========================================================
+   GAME RẮN SĂN MỒI - STYLE.CSS
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --bg-1: #07110d;
+  --bg-2: #0b1c13;
+  --panel: #101d17;
+  --panel-light: #17291f;
+
+  --line: #294235;
+  --line-light: #3b604b;
+
+  --green: #49e38a;
+  --green-dark: #1c8f50;
+
+  --gold: #ffd45c;
+  --red: #ff5c67;
+
+  --text: #effff5;
+  --muted: #a7bdb0;
+
+  --shadow: rgba(0, 0, 0, 0.45);
+}
+
+/* =========================================================
+   CƠ BẢN
+   ========================================================= */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  min-height: 100%;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      #1b4732 0%,
+      #0b1c13 35%,
+      #07110d 65%,
+      #030806 100%
+    );
+
+  color: var(--text);
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+body {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+
+  overflow-x: hidden;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+.app {
+  width: min(760px, 100%);
+
+  min-height: 100vh;
+
+  padding: 14px;
+
+  margin: 0 auto;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+header {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 12px;
+}
+
+.header-title {
+  min-width: 0;
+}
+
+h1 {
+  margin: 0 0 4px;
+
+  font-size: 30px;
+  line-height: 1.15;
+
+  font-weight: 800;
+
+  letter-spacing: -0.5px;
+}
+
+header p {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
+}
+
+/* =========================================================
+   NÚT BÁNH RĂNG
+   ========================================================= */
+
+#gearBtn,
+#closeSettings {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  border: 1px solid var(--line);
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.09),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  color: white;
+
+  font-size: 22px;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+#gearBtn:hover,
+#closeSettings:hover {
+  background: rgba(73, 227, 138, 0.12);
+
+  border-color: var(--green);
+
+  transform: translateY(-1px);
+}
+
+#gearBtn:active,
+#closeSettings:active {
+  transform: scale(0.94);
+}
+
+/* =========================================================
+   HUD
+   ========================================================= */
+
+.hud {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 8px;
+
+  margin-bottom: 10px;
+}
+
+.hud div {
+  min-width: 0;
+
+  padding: 10px 8px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 39, 29, 0.96),
+      rgba(10, 24, 16, 0.96)
+    );
+
+  border: 1px solid var(--line);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hud span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.6px;
+}
+
+.hud b {
+  display: block;
+
+  color: var(--text);
+
+  font-size: 20px;
+
+  line-height: 1.2;
+}
+
+/* =========================================================
+   KHU VỰC GAME
+   ========================================================= */
+
+#gameWrap {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  overflow: hidden;
+
+  border-radius: 22px;
+
+  border: 2px solid #294b38;
+
+  background:
+    radial-gradient(
+      circle at center,
+      #102419,
+      #07130d 70%,
+      #050b08
+    );
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    inset 0 0 35px rgba(73, 227, 138, 0.04);
+
+  touch-action: none;
+
+  user-select: none;
+
+  -webkit-user-select: none;
+}
+
+/* Canvas */
+
+canvas {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  touch-action: none;
+
+  user-select: none;
+
+  -webkit-user-select: none;
+}
+
+/* =========================================================
+   MÀN HÌNH THÔNG BÁO / START / GAME OVER
+   ========================================================= */
+
+#message {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 10;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 18px;
+
+  background:
+    rgba(2, 8, 5, 0.70);
+
+  backdrop-filter: blur(5px);
+
+  -webkit-backdrop-filter: blur(5px);
+}
+
+#message.hidden {
+  display: none;
+}
+
+.message-card {
+  width: min(88%, 380px);
+
+  padding: 26px 22px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 38, 28, 0.98),
+      rgba(9, 20, 14, 0.98)
+    );
+
+  border: 1px solid #31533f;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.65);
+
+  animation: messageAppear 0.25s ease;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+
+    transform: scale(0.94) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: scale(1) translateY(0);
+  }
+}
+
+#messageIcon {
+  margin-bottom: 5px;
+
+  font-size: 48px;
+
+  line-height: 1;
+}
+
+.message-card h2 {
+  margin: 10px 0 8px;
+
+  font-size: 25px;
+}
+
+.message-card p {
+  margin: 0 0 18px;
+
+  color: var(--muted);
+
+  line-height: 1.55;
+
+  font-size: 14px;
+}
+
+/* =========================================================
+   NÚT GAME
+   ========================================================= */
+
+#startBtn,
+#restartBtn {
+  min-height: 44px;
+
+  border-radius: 13px;
+
+  padding: 11px 18px;
+
+  font-weight: 700;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+#startBtn {
+  width: 100%;
+
+  border: 0;
+
+  background:
+    linear-gradient(
+      135deg,
+      #59ed98,
+      #35c975
+    );
+
+  color: #062010;
+
+  box-shadow:
+    0 8px 25px rgba(73, 227, 138, 0.18);
+}
+
+#startBtn:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 30px rgba(73, 227, 138, 0.28);
+}
+
+#startBtn:active {
+  transform: scale(0.97);
+}
+
+/* =========================================================
+   THÔNG TIN LEVEL
+   ========================================================= */
+
+.level-info {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 12px 4px;
+
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+#target {
+  color: var(--gold);
+
+  font-weight: 700;
+}
+
+/* =========================================================
+   CÀI ĐẶT
+   ========================================================= */
+
+#settings {
+  position: fixed;
+
+  z-index: 100;
+
+  top: 15px;
+  right: 15px;
+
+  width: min(360px, calc(100vw - 30px));
+
+  max-height: calc(100vh - 30px);
+
+  overflow-y: auto;
+
+  padding: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(16, 31, 23, 0.99),
+      rgba(7, 17, 12, 0.99)
+    );
+
+  border: 1px solid #355641;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.75);
+
+  display: none;
+
+  animation: settingsAppear 0.18s ease;
+}
+
+#settings.show {
+  display: block;
+}
+
+@keyframes settingsAppear {
+  from {
+    opacity: 0;
+
+    transform: translateY(-8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Thanh tiêu đề settings */
+
+.settings-head {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 4px;
+}
+
+.settings-head h2 {
+  margin: 0;
+
+  font-size: 21px;
+}
+
+/* Nút đóng */
+
+#closeSettings {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 12px;
+
+  font-size: 18px;
+}
+
+/* =========================================================
+   LABEL SETTINGS
+   ========================================================= */
+
+#settings label {
+  display: block;
+
+  padding: 14px 0;
+
+  border-top: 1px solid #20372b;
+
+  color: var(--text);
+
+  font-size: 14px;
+}
+
+#settings label:first-of-type {
+  margin-top: 5px;
+}
+
+/* =========================================================
+   SLIDER TỐC ĐỘ
+   ========================================================= */
+
+.range-row {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 10px;
+}
+
+.range-row input[type="range"] {
+  flex: 1;
+
+  width: 100%;
+
+  accent-color: var(--green);
+
+  cursor: pointer;
+}
+
+#speedValue {
+  min-width: 52px;
+
+  padding: 5px 8px;
+
+  text-align: center;
+
+  color: var(--green);
+
+  background: rgba(73, 227, 138, 0.08);
+
+  border: 1px solid rgba(73, 227, 138, 0.18);
+
+  border-radius: 8px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+/* =========================================================
+   SWITCH
+   ========================================================= */
+
+.switch-row {
+  display: flex !important;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 15px;
+}
+
+.switch-row input[type="checkbox"] {
+  position: relative;
+
+  width: 44px;
+  height: 24px;
+
+  flex-shrink: 0;
+
+  margin: 0;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: #263b2e;
+
+  border: 1px solid #42604d;
+
+  border-radius: 999px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.switch-row input[type="checkbox"]::before {
+  content: "";
+
+  position: absolute;
+
+  top: 3px;
+  left: 3px;
+
+  width: 16px;
+  height: 16px;
+
+  background: #dce9e0;
+
+  border-radius: 50%;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.switch-row input[type="checkbox"]:checked {
+  background: var(--green-dark);
+
+  border-color: var(--green);
+}
+
+.switch-row input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+
+  background: white;
+}
+
+/* =========================================================
+   NÚT RESTART
+   ========================================================= */
+
+#restartBtn {
+  width: 100%;
+
+  margin-top: 15px;
+
+  border: 1px solid var(--line);
+
+  background:
+    linear-gradient(
+      135deg,
+      #20352a,
+      #14251b
+    );
+
+  color: white;
+}
+
+#restartBtn:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #294636,
+      #1b3023
+    );
+
+  border-color: var(--line-light);
+}
+
+#restartBtn:active {
+  transform: scale(0.97);
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+#toast {
+  position: fixed;
+
+  z-index: 200;
+
+  left: 50%;
+  bottom: 25px;
+
+  transform:
+    translate(-50%, 25px);
+
+  max-width: calc(100vw - 30px);
+
+  padding: 10px 17px;
+
+  background:
+    rgba(18, 37, 26, 0.96);
+
+  border: 1px solid #3d664c;
+
+  border-radius: 999px;
+
+  color: var(--text);
+
+  font-size: 13px;
+
+  text-align: center;
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.35);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+#toast.show {
+  opacity: 1;
+
+  transform:
+    translate(-50%, 0);
+}
+
+/* =========================================================
+   FOCUS / ACCESSIBILITY
+   ========================================================= */
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--green);
+
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .app {
+    width: 100%;
+
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  header p {
+    font-size: 12px;
+  }
+
+  #gearBtn {
+    width: 44px;
+    height: 44px;
+
+    border-radius: 12px;
+  }
+
+  .hud {
+    gap: 6px;
+  }
+
+  .hud div {
+    padding: 8px 5px;
+
+    border-radius: 12px;
+  }
+
+  .hud span {
+    font-size: 9px;
+  }
+
+  .hud b {
+    font-size: 17px;
+  }
+
+  #gameWrap {
+    border-radius: 17px;
+  }
+
+  .level-info {
+    font-size: 12px;
+  }
+
+  #settings {
+    top: 10px;
+    right: 10px;
+
+    width: calc(100vw - 20px);
+
+    max-height: calc(100vh - 20px);
+
+    border-radius: 17px;
+  }
+
+  .message-card {
+    width: 92%;
+
+    padding: 23px 18px;
+  }
+
+  #messageIcon {
+    font-size: 42px;
+  }
+
+  .message-card h2 {
+    font-size: 22px;
+  }
+}
+
+/* =========================================================
+   MÀN HÌNH RẤT NHỎ
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .app {
+    padding: 7px;
+  }
+
+  h1 {
+    font-size: 21px;
+  }
+
+  .hud b {
+    font-size: 15px;
+  }
+
+  .level-info {
+    padding: 9px 2px;
+  }
+
+  #gameWrap {
+    border-radius: 14px;
+  }
+}
+
+/* =========================================================
+   MÀN HÌNH CAO / ĐIỆN THOẠI XOAY NGANG
+   ========================================================= */
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .app {
+    padding: 8px;
+  }
+
+  header {
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  header p {
+    font-size: 11px;
+  }
+
+  .hud {
+    margin-bottom: 6px;
+  }
+
+  #gameWrap {
+    max-height: calc(100vh - 115px);
+
+    width: auto;
+
+    margin: 0 auto;
+
+    aspect-ratio: 1 / 1;
+  }
+
+  .level-info {
+    padding: 6px 3px;
+  }
+}
+/* =========================================================
+   BỐI CẢNH & MỨC ĐỘ CHƯỚNG NGẠI VẬT
+   ========================================================= */
+
+#settings select {
+  width: 100%;
+
+  margin-top: 9px;
+
+  padding: 11px 12px;
+
+  border: 1px solid var(--line);
+
+  border-radius: 11px;
+
+  background: #14251b;
+
+  color: var(--text);
+
+  font-size: 14px;
+
+  outline: none;
+
+  cursor: pointer;
+}
+
+#settings select:hover {
+  border-color: var(--green);
+}
+
+#settings select:focus {
+  border-color: var(--green);
+
+  box-shadow:
+    0 0 0 2px rgba(73, 227, 138, 0.12);
+}
+
+#settings select option {
+  background: #101d17;
+  color: white;
+}
