@@ -1,3 +1,7 @@
+/* =========================================================
+   RẮN SĂN MỒI - SCRIPT.JS
+   ========================================================= */
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -38,7 +42,7 @@ const obstacleLevel =
 
 
 /* =========================================================
-   KÍCH THƯỚC
+   KÍCH THƯỚC BẢN ĐỒ
    ========================================================= */
 
 const COLS = 24;
@@ -48,7 +52,7 @@ let cell = 20;
 
 
 /* =========================================================
-   TRẠNG THÁI
+   TRẠNG THÁI GAME
    ========================================================= */
 
 let snake = [];
@@ -78,11 +82,24 @@ let levelStartScore = 0;
 
 
 /* =========================================================
-   AUDIO
+   ÂM THANH
    ========================================================= */
 
 let audioCtx = null;
-let musicTimer = null;
+
+/*
+   Nhạc nền chill.
+
+   Thư mục:
+   music/
+      chill.mp3
+*/
+
+const backgroundMusic =
+  new Audio("./music/chill.mp3");
+
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.25;
 
 
 /* =========================================================
@@ -90,7 +107,9 @@ let musicTimer = null;
    ========================================================= */
 
 let best =
-  Number(localStorage.getItem("snakeBest") || 0);
+  Number(
+    localStorage.getItem("snakeBest") || 0
+  );
 
 bestEl.textContent = best;
 
@@ -100,18 +119,31 @@ bestEl.textContent = best;
    ========================================================= */
 
 const levels = [
+
   ["Đồng cỏ khởi đầu", 5],
+
   ["Khu rừng xanh", 7],
+
   ["Mê cung đá", 9],
+
   ["Sa mạc nóng", 10],
+
   ["Hang băng", 12],
+
   ["Thung lũng", 13],
+
   ["Rừng đêm", 15],
+
   ["Đảo vui chơi", 16],
+
   ["Cổng huyền bí", 18],
+
   ["Thành trì rắn", 20],
+
   ["Đường hầm cuối", 22],
+
   ["Vương quốc rắn", 25]
+
 ];
 
 
@@ -122,10 +154,13 @@ const levels = [
 const backgrounds = {
 
   forest: {
+
     name: "Rừng",
 
     bg1: "#071a0d",
+
     bg2: "#102e18",
+
     grid: "rgba(91,190,105,.10)",
 
     obstacleTypes: [
@@ -133,13 +168,18 @@ const backgrounds = {
       "rock",
       "bush"
     ]
+
   },
 
+
   mansion: {
+
     name: "Dinh thự",
 
     bg1: "#170d19",
+
     bg2: "#302016",
+
     grid: "rgba(255,210,120,.08)",
 
     obstacleTypes: [
@@ -147,13 +187,18 @@ const backgrounds = {
       "table",
       "chair"
     ]
+
   },
 
+
   tunnel: {
+
     name: "Đường hầm",
 
     bg1: "#080d17",
+
     bg2: "#172335",
+
     grid: "rgba(80,180,255,.08)",
 
     obstacleTypes: [
@@ -161,13 +206,18 @@ const backgrounds = {
       "barrier",
       "lamp"
     ]
+
   },
 
+
   house: {
+
     name: "Nhà",
 
     bg1: "#21140b",
+
     bg2: "#3b2515",
+
     grid: "rgba(255,195,100,.08)",
 
     obstacleTypes: [
@@ -175,13 +225,18 @@ const backgrounds = {
       "chair",
       "cabinet"
     ]
+
   },
 
+
   playground: {
+
     name: "Khu vui chơi",
 
     bg1: "#15102c",
+
     bg2: "#251a48",
+
     grid: "rgba(210,130,255,.08)",
 
     obstacleTypes: [
@@ -189,6 +244,7 @@ const backgrounds = {
       "bench",
       "slide"
     ]
+
   }
 
 };
@@ -201,25 +257,34 @@ const backgrounds = {
 const obstacleAmounts = {
 
   easy: {
+
     name: "Dễ",
+
     amount: 7
+
   },
 
   medium: {
+
     name: "Trung bình",
+
     amount: 14
+
   },
 
   hard: {
+
     name: "Khó",
+
     amount: 23
+
   }
 
 };
 
 
 /* =========================================================
-   BỐI CẢNH HIỆN TẠI
+   LẤY BỐI CẢNH
    ========================================================= */
 
 function getBackground() {
@@ -229,12 +294,15 @@ function getBackground() {
       ? backgroundSelect.value
       : "forest";
 
-  return backgrounds[key] || backgrounds.forest;
+  return (
+    backgrounds[key] ||
+    backgrounds.forest
+  );
 }
 
 
 /* =========================================================
-   MỨC ĐỘ HIỆN TẠI
+   LẤY MỨC CHƯỚNG NGẠI VẬT
    ========================================================= */
 
 function getObstacleAmount() {
@@ -244,16 +312,22 @@ function getObstacleAmount() {
       ? obstacleLevel.value
       : "medium";
 
-  return obstacleAmounts[key]
-    || obstacleAmounts.medium;
+  return (
+    obstacleAmounts[key] ||
+    obstacleAmounts.medium
+  );
 }
 
 
 /* =========================================================
-   RESIZE
+   RESIZE CANVAS
    ========================================================= */
 
 function resizeCanvas() {
+
+  if (!gameWrap) {
+    return;
+  }
 
   const rect =
     gameWrap.getBoundingClientRect();
@@ -291,7 +365,6 @@ function resizeCanvas() {
   draw();
 }
 
-
 window.addEventListener(
   "resize",
   resizeCanvas
@@ -304,11 +377,17 @@ window.addEventListener(
 
 function showToast(text) {
 
+  if (!toast) {
+    return;
+  }
+
   toast.textContent = text;
 
   toast.classList.add("show");
 
-  clearTimeout(showToast.timer);
+  clearTimeout(
+    showToast.timer
+  );
 
   showToast.timer =
     setTimeout(() => {
@@ -328,6 +407,10 @@ function updateLevelUI() {
   const current =
     levels[level - 1];
 
+  if (!current) {
+    return;
+  }
+
   levelEl.textContent =
     `${level} / ${levels.length}`;
 
@@ -341,8 +424,12 @@ function updateLevelUI() {
 
 function updateSpeedUI() {
 
-  if (!speedRange || !speedValue)
+  if (
+    !speedRange ||
+    !speedValue
+  ) {
     return;
+  }
 
   speedValue.textContent =
     speedRange.value;
@@ -363,6 +450,7 @@ function resetGame() {
   const centerY =
     Math.floor(ROWS / 2);
 
+
   snake = [
 
     {
@@ -382,15 +470,18 @@ function resetGame() {
 
   ];
 
+
   direction = {
     x: 1,
     y: 0
   };
 
+
   nextDirection = {
     x: 1,
     y: 0
   };
+
 
   eaten = 0;
 
@@ -400,11 +491,18 @@ function resetGame() {
 
   levelStartScore = score;
 
+
   generateObstacles();
 
   spawnFood();
 
-  scoreEl.textContent = score;
+
+  scoreEl.textContent =
+    score;
+
+  bestEl.textContent =
+    best;
+
 
   updateLevelUI();
 
@@ -420,20 +518,26 @@ function generateObstacles() {
 
   obstacles = [];
 
+
   if (
     !obstacleToggle ||
     !obstacleToggle.checked
   ) {
+
     return;
   }
+
 
   const amount =
     getObstacleAmount().amount;
 
+
   const types =
     getBackground().obstacleTypes;
 
+
   let tries = 0;
+
 
   while (
     obstacles.length < amount &&
@@ -441,6 +545,7 @@ function generateObstacles() {
   ) {
 
     tries++;
+
 
     const p = {
 
@@ -465,18 +570,20 @@ function generateObstacles() {
     };
 
 
-    /* Khu vực bắt đầu an toàn */
-
     const centerX =
       Math.floor(COLS / 2);
 
     const centerY =
       Math.floor(ROWS / 2);
 
+
+    /* Khu vực bắt đầu an toàn */
+
     if (
       Math.abs(p.x - centerX) <= 3 &&
       Math.abs(p.y - centerY) <= 3
     ) {
+
       continue;
     }
 
@@ -490,8 +597,10 @@ function generateObstacles() {
           o.y === p.y
       )
     ) {
+
       continue;
     }
+
 
     obstacles.push(p);
   }
@@ -506,9 +615,11 @@ function spawnFood() {
 
   let tries = 0;
 
+
   while (tries < 2000) {
 
     tries++;
+
 
     const candidate = {
 
@@ -552,9 +663,15 @@ function spawnFood() {
     }
   }
 
+
+  /* Nếu bản đồ quá đầy */
+
   food = {
+
     x: 2,
+
     y: 2
+
   };
 }
 
@@ -565,16 +682,20 @@ function spawnFood() {
 
 function startGame() {
 
-  if (running)
+  if (running) {
     return;
+  }
+
 
   running = true;
 
   paused = false;
 
+
   message.classList.add(
     "hidden"
   );
+
 
   initAudio();
 
@@ -592,12 +713,14 @@ function scheduleLoop() {
 
   clearInterval(timer);
 
+
   const speed =
     Number(
       speedRange
         ? speedRange.value
         : 5
     );
+
 
   const ms =
     Math.max(
@@ -606,6 +729,7 @@ function scheduleLoop() {
       speed * 17 -
       level * 3
     );
+
 
   timer =
     setInterval(
@@ -616,7 +740,7 @@ function scheduleLoop() {
 
 
 /* =========================================================
-   VÒNG LẶP
+   VÒNG LẶP GAME
    ========================================================= */
 
 function step() {
@@ -625,6 +749,7 @@ function step() {
     !running ||
     paused
   ) {
+
     return;
   }
 
@@ -698,7 +823,9 @@ function step() {
   snake.unshift(head);
 
 
-  /* ĂN MỒI */
+  /* =====================================================
+     ĂN MỒI
+     ===================================================== */
 
   if (
     food &&
@@ -708,7 +835,10 @@ function step() {
 
     eaten++;
 
-    score += 10 * level;
+
+    score +=
+      10 * level;
+
 
     if (score > best) {
 
@@ -718,7 +848,9 @@ function step() {
         "snakeBest",
         best
       );
+
     }
+
 
     scoreEl.textContent =
       score;
@@ -726,23 +858,29 @@ function step() {
     bestEl.textContent =
       best;
 
+
     playEat();
 
     vibrate(25);
-
-    spawnFood();
 
 
     const target =
       levels[level - 1][1];
 
 
+    /* ĐỦ MỒI */
+
     if (eaten >= target) {
+
+      draw();
 
       nextLevel();
 
       return;
     }
+
+
+    spawnFood();
 
   } else {
 
@@ -764,61 +902,32 @@ function nextLevel() {
 
   running = false;
 
+  paused = false;
 
-  if (
-    level <
-    levels.length
-  ) {
-
-    messageIcon.textContent =
-      "🎉";
-
-    messageTitle.textContent =
-      `Hoàn thành màn ${level}!`;
-
-    messageText.textContent =
-      `Bạn có ${score} điểm. Màn tiếp theo sẽ khó hơn.`;
-
-    startBtn.textContent =
-      "Sang màn tiếp";
-
-    message.classList.remove(
-      "hidden"
-    );
+  stopMusic();
 
 
-    startBtn.onclick =
-      () => {
+  /* =====================================================
+     HOÀN THÀNH TẤT CẢ MÀN
+     ===================================================== */
 
-        level++;
-
-        levelStartScore =
-          score;
-
-        resetGame();
-
-        startBtn.textContent =
-          "Bắt đầu";
-
-        startBtn.onclick =
-          startGame;
-
-        startGame();
-      };
-
-  } else {
+  if (level >= levels.length) {
 
     messageIcon.textContent =
       "🏆";
 
+
     messageTitle.textContent =
       "Bạn đã hoàn thành tất cả!";
 
+
     messageText.textContent =
-      `12 màn đã được chinh phục. Tổng điểm: ${score}`;
+      `Bạn đã vượt qua ${levels.length} màn với ${score} điểm!`;
+
 
     startBtn.textContent =
       "Chơi lại từ đầu";
+
 
     message.classList.remove(
       "hidden"
@@ -826,25 +935,125 @@ function nextLevel() {
 
 
     startBtn.onclick =
-      () => {
-
-        level = 1;
+      function () {
 
         score = 0;
 
+        level = 1;
+
+        eaten = 0;
+
         levelStartScore = 0;
 
+
         resetGame();
+
+
+        message.classList.add(
+          "hidden"
+        );
+
 
         startBtn.textContent =
           "Bắt đầu";
 
+
         startBtn.onclick =
           startGame;
 
+
         startGame();
+
       };
+
+
+    return;
   }
+
+
+  /* =====================================================
+     THÔNG BÁO HOÀN THÀNH MÀN
+     ===================================================== */
+
+  messageIcon.textContent =
+    "🎉";
+
+
+  messageTitle.textContent =
+    `Hoàn thành màn ${level}!`;
+
+
+  messageText.textContent =
+    `Bạn đã ăn đủ ${levels[level - 1][1]} mồi.`;
+
+
+  startBtn.textContent =
+    "Sang màn tiếp →";
+
+
+  message.classList.remove(
+    "hidden"
+  );
+
+
+  let changed = false;
+
+
+  function goNextLevel() {
+
+    if (changed) {
+      return;
+    }
+
+
+    changed = true;
+
+
+    clearTimeout(
+      nextLevel.autoTimer
+    );
+
+
+    level++;
+
+    eaten = 0;
+
+    levelStartScore = score;
+
+
+    resetGame();
+
+
+    message.classList.add(
+      "hidden"
+    );
+
+
+    startBtn.textContent =
+      "Bắt đầu";
+
+
+    startBtn.onclick =
+      startGame;
+
+
+    startGame();
+  }
+
+
+  startBtn.onclick =
+    goNextLevel;
+
+
+  /*
+     TỰ ĐỘNG QUA MÀN SAU 1,5 GIÂY
+  */
+
+  nextLevel.autoTimer =
+    setTimeout(
+      goNextLevel,
+      1500
+    );
 }
 
 
@@ -858,19 +1067,26 @@ function gameOver() {
 
   running = false;
 
+  paused = false;
+
   stopMusic();
+
 
   messageIcon.textContent =
     "💥";
 
+
   messageTitle.textContent =
     "Game Over";
+
 
   messageText.textContent =
     `Bạn đạt ${score} điểm ở màn ${level}.`;
 
+
   startBtn.textContent =
     "Chơi lại";
+
 
   message.classList.remove(
     "hidden"
@@ -878,20 +1094,25 @@ function gameOver() {
 
 
   startBtn.onclick =
-    () => {
+    function () {
 
       score =
         levelStartScore;
 
+
       resetGame();
+
 
       startBtn.textContent =
         "Bắt đầu";
 
+
       startBtn.onclick =
         startGame;
 
+
       startGame();
+
     };
 }
 
@@ -903,23 +1124,27 @@ function gameOver() {
 function setDirection(x, y) {
 
   if (!running) {
+
     startGame();
   }
 
 
-  /* Không cho quay ngược */
+  /* Không cho quay 180 độ */
 
   if (
     x === -direction.x &&
     y === -direction.y
   ) {
+
     return;
   }
 
 
   nextDirection = {
+
     x,
     y
+
   };
 }
 
@@ -938,6 +1163,7 @@ gameWrap.addEventListener(
     const touch =
       event.changedTouches[0];
 
+
     touchStart = {
 
       x: touch.clientX,
@@ -945,6 +1171,7 @@ gameWrap.addEventListener(
       y: touch.clientY
 
     };
+
 
     event.preventDefault();
 
@@ -959,19 +1186,24 @@ gameWrap.addEventListener(
   "touchend",
   event => {
 
-    if (!touchStart)
+    if (!touchStart) {
       return;
+    }
+
 
     const touch =
       event.changedTouches[0];
+
 
     const dx =
       touch.clientX -
       touchStart.x;
 
+
     const dy =
       touch.clientY -
       touchStart.y;
+
 
     touchStart = null;
 
@@ -982,6 +1214,7 @@ gameWrap.addEventListener(
         Math.abs(dy)
       ) < 18
     ) {
+
       return;
     }
 
@@ -1003,6 +1236,7 @@ gameWrap.addEventListener(
         Math.sign(dy)
       );
     }
+
 
     event.preventDefault();
 
@@ -1054,18 +1288,23 @@ document.addEventListener(
 
       event.preventDefault();
 
+
       setDirection(
         ...keys[event.key]
       );
     }
 
 
+    /* SPACE = TẠM DỪNG */
+
     if (
       event.key === " " &&
       running
     ) {
 
-      paused = !paused;
+      paused =
+        !paused;
+
 
       showToast(
         paused
@@ -1079,7 +1318,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   HÀM VẼ HÌNH CHỮ NHẬT BO GÓC
+   BO GÓC
    ========================================================= */
 
 function roundedRect(
@@ -1092,13 +1331,30 @@ function roundedRect(
 
   ctx.beginPath();
 
-  ctx.roundRect(
-    x,
-    y,
-    width,
-    height,
-    radius
-  );
+
+  if (
+    typeof ctx.roundRect ===
+    "function"
+  ) {
+
+    ctx.roundRect(
+      x,
+      y,
+      width,
+      height,
+      radius
+    );
+
+  } else {
+
+    ctx.rect(
+      x,
+      y,
+      width,
+      height
+    );
+  }
+
 
   ctx.fill();
 }
@@ -1113,8 +1369,10 @@ function drawBackground() {
   const bg =
     getBackground();
 
+
   const width =
     COLS * cell;
+
 
   const height =
     ROWS * cell;
@@ -1128,18 +1386,22 @@ function drawBackground() {
       height
     );
 
+
   gradient.addColorStop(
     0,
     bg.bg2
   );
+
 
   gradient.addColorStop(
     1,
     bg.bg1
   );
 
+
   ctx.fillStyle =
     gradient;
+
 
   ctx.fillRect(
     0,
@@ -1154,6 +1416,7 @@ function drawBackground() {
   ctx.strokeStyle =
     bg.grid;
 
+
   ctx.lineWidth = 1;
 
 
@@ -1165,15 +1428,18 @@ function drawBackground() {
 
     ctx.beginPath();
 
+
     ctx.moveTo(
       x * cell,
       0
     );
 
+
     ctx.lineTo(
       x * cell,
       height
     );
+
 
     ctx.stroke();
   }
@@ -1187,15 +1453,18 @@ function drawBackground() {
 
     ctx.beginPath();
 
+
     ctx.moveTo(
       0,
       y * cell
     );
 
+
     ctx.lineTo(
       width,
       y * cell
     );
+
 
     ctx.stroke();
   }
@@ -1211,21 +1480,24 @@ function drawObstacle(obstacle) {
   const x =
     obstacle.x * cell;
 
+
   const y =
     obstacle.y * cell;
+
 
   const type =
     obstacle.type;
 
 
-  /* -------------------------
+  /* =========================
      RỪNG
-     ------------------------- */
+     ========================= */
 
   if (type === "tree") {
 
     ctx.fillStyle =
       "#5a341b";
+
 
     ctx.fillRect(
       x + cell * .38,
@@ -1234,10 +1506,13 @@ function drawObstacle(obstacle) {
       cell * .50
     );
 
+
     ctx.fillStyle =
       "#24733c";
 
+
     ctx.beginPath();
+
 
     ctx.arc(
       x + cell * .5,
@@ -1247,7 +1522,9 @@ function drawObstacle(obstacle) {
       Math.PI * 2
     );
 
+
     ctx.fill();
+
 
     return;
   }
@@ -1258,6 +1535,7 @@ function drawObstacle(obstacle) {
     ctx.fillStyle =
       "#68726d";
 
+
     roundedRect(
       x + 3,
       y + 5,
@@ -1265,6 +1543,7 @@ function drawObstacle(obstacle) {
       cell - 7,
       5
     );
+
 
     return;
   }
@@ -1275,7 +1554,9 @@ function drawObstacle(obstacle) {
     ctx.fillStyle =
       "#176331";
 
+
     ctx.beginPath();
+
 
     ctx.arc(
       x + cell * .35,
@@ -1285,6 +1566,7 @@ function drawObstacle(obstacle) {
       Math.PI * 2
     );
 
+
     ctx.arc(
       x + cell * .62,
       y + cell * .48,
@@ -1293,20 +1575,23 @@ function drawObstacle(obstacle) {
       Math.PI * 2
     );
 
+
     ctx.fill();
+
 
     return;
   }
 
 
-  /* -------------------------
+  /* =========================
      DINH THỰ
-     ------------------------- */
+     ========================= */
 
   if (type === "pillar") {
 
     ctx.fillStyle =
       "#b7a47c";
+
 
     ctx.fillRect(
       x + cell * .30,
@@ -1315,8 +1600,10 @@ function drawObstacle(obstacle) {
       cell - 4
     );
 
+
     ctx.fillStyle =
       "#e0cc9c";
+
 
     ctx.fillRect(
       x + cell * .22,
@@ -1324,6 +1611,7 @@ function drawObstacle(obstacle) {
       cell * .56,
       4
     );
+
 
     return;
   }
@@ -1337,12 +1625,14 @@ function drawObstacle(obstacle) {
     ctx.fillStyle =
       "#77451f";
 
+
     ctx.fillRect(
       x + cell * .18,
       y + cell * .25,
       cell * .64,
       cell * .22
     );
+
 
     ctx.fillRect(
       x + cell * .25,
@@ -1351,6 +1641,7 @@ function drawObstacle(obstacle) {
       cell * .38
     );
 
+
     ctx.fillRect(
       x + cell * .63,
       y + cell * .47,
@@ -1358,18 +1649,20 @@ function drawObstacle(obstacle) {
       cell * .38
     );
 
+
     return;
   }
 
 
-  /* -------------------------
+  /* =========================
      ĐƯỜNG HẦM
-     ------------------------- */
+     ========================= */
 
   if (type === "wall") {
 
     ctx.fillStyle =
       "#4e5965";
+
 
     roundedRect(
       x + 2,
@@ -1379,10 +1672,13 @@ function drawObstacle(obstacle) {
       3
     );
 
+
     ctx.strokeStyle =
       "#8995a3";
 
+
     ctx.stroke();
+
 
     return;
   }
@@ -1393,6 +1689,7 @@ function drawObstacle(obstacle) {
     ctx.fillStyle =
       "#c13d36";
 
+
     ctx.fillRect(
       x + 2,
       y + cell * .30,
@@ -1400,8 +1697,10 @@ function drawObstacle(obstacle) {
       cell * .25
     );
 
+
     ctx.fillStyle =
       "#d6dbe0";
+
 
     ctx.fillRect(
       x + 3,
@@ -1409,6 +1708,7 @@ function drawObstacle(obstacle) {
       cell - 6,
       3
     );
+
 
     return;
   }
@@ -1419,7 +1719,9 @@ function drawObstacle(obstacle) {
     ctx.fillStyle =
       "#e5c85e";
 
+
     ctx.beginPath();
+
 
     ctx.arc(
       x + cell / 2,
@@ -1429,39 +1731,48 @@ function drawObstacle(obstacle) {
       Math.PI * 2
     );
 
+
     ctx.fill();
+
 
     ctx.strokeStyle =
       "#566372";
 
+
     ctx.lineWidth = 2;
 
+
     ctx.beginPath();
+
 
     ctx.moveTo(
       x + cell / 2,
       y + cell * .55
     );
 
+
     ctx.lineTo(
       x + cell / 2,
       y + cell
     );
 
+
     ctx.stroke();
+
 
     return;
   }
 
 
-  /* -------------------------
+  /* =========================
      NHÀ
-     ------------------------- */
+     ========================= */
 
   if (type === "cabinet") {
 
     ctx.fillStyle =
       "#75431f";
+
 
     roundedRect(
       x + 3,
@@ -1471,10 +1782,13 @@ function drawObstacle(obstacle) {
       3
     );
 
+
     ctx.strokeStyle =
       "#d09048";
 
+
     ctx.lineWidth = 2;
+
 
     ctx.strokeRect(
       x + cell * .25,
@@ -1483,54 +1797,65 @@ function drawObstacle(obstacle) {
       cell * .64
     );
 
+
     return;
   }
 
 
-  /* -------------------------
+  /* =========================
      KHU VUI CHƠI
-     ------------------------- */
+     ========================= */
 
   if (type === "fence") {
 
     ctx.strokeStyle =
       "#e85d75";
 
+
     ctx.lineWidth = 3;
 
+
     ctx.beginPath();
+
 
     ctx.moveTo(
       x + cell * .15,
       y + cell * .75
     );
 
+
     ctx.lineTo(
       x + cell * .85,
       y + cell * .75
     );
 
+
     ctx.moveTo(
       x + cell * .25,
       y + cell * .25
     );
+
 
     ctx.lineTo(
       x + cell * .25,
       y + cell * .85
     );
 
+
     ctx.moveTo(
       x + cell * .70,
       y + cell * .25
     );
 
+
     ctx.lineTo(
       x + cell * .70,
       y + cell * .85
     );
+
 
     ctx.stroke();
+
 
     return;
   }
@@ -1541,6 +1866,7 @@ function drawObstacle(obstacle) {
     ctx.fillStyle =
       "#e4a936";
 
+
     ctx.fillRect(
       x + cell * .15,
       y + cell * .30,
@@ -1548,12 +1874,14 @@ function drawObstacle(obstacle) {
       cell * .18
     );
 
+
     ctx.fillRect(
       x + cell * .20,
       y + cell * .52,
       cell * .60,
       cell * .16
     );
+
 
     return;
   }
@@ -1564,26 +1892,33 @@ function drawObstacle(obstacle) {
     ctx.strokeStyle =
       "#63b6ff";
 
+
     ctx.lineWidth = 4;
 
+
     ctx.beginPath();
+
 
     ctx.moveTo(
       x + cell * .20,
       y + cell * .20
     );
 
+
     ctx.lineTo(
       x + cell * .65,
       y + cell * .20
     );
+
 
     ctx.lineTo(
       x + cell * .78,
       y + cell * .78
     );
 
+
     ctx.stroke();
+
 
     return;
   }
@@ -1596,16 +1931,20 @@ function drawObstacle(obstacle) {
 
 function drawFood() {
 
-  if (!food)
+  if (!food) {
     return;
+  }
+
 
   const cx =
     food.x * cell +
     cell / 2;
 
+
   const cy =
     food.y * cell +
     cell / 2;
+
 
   const radius =
     cell * .30;
@@ -1614,12 +1953,16 @@ function drawFood() {
   ctx.shadowColor =
     "#ff4b5c";
 
+
   ctx.shadowBlur = 12;
+
 
   ctx.fillStyle =
     "#ff4355";
 
+
   ctx.beginPath();
+
 
   ctx.arc(
     cx,
@@ -1629,7 +1972,9 @@ function drawFood() {
     Math.PI * 2
   );
 
+
   ctx.fill();
+
 
   ctx.shadowBlur = 0;
 
@@ -1639,7 +1984,9 @@ function drawFood() {
   ctx.fillStyle =
     "#4edb72";
 
+
   ctx.beginPath();
+
 
   ctx.ellipse(
     cx + cell * .14,
@@ -1650,6 +1997,7 @@ function drawFood() {
     0,
     Math.PI * 2
   );
+
 
   ctx.fill();
 }
@@ -1667,6 +2015,7 @@ function drawSnake() {
       const x =
         part.x * cell;
 
+
       const y =
         part.y * cell;
 
@@ -1676,7 +2025,9 @@ function drawSnake() {
         ctx.shadowColor =
           "#49e38a";
 
+
         ctx.shadowBlur = 10;
+
 
         ctx.fillStyle =
           "#50ed91";
@@ -1684,6 +2035,7 @@ function drawSnake() {
       } else {
 
         ctx.shadowBlur = 0;
+
 
         ctx.fillStyle =
           index % 2 === 0
@@ -1700,6 +2052,7 @@ function drawSnake() {
         cell * .25
       );
 
+
       ctx.shadowBlur = 0;
 
 
@@ -1710,8 +2063,6 @@ function drawSnake() {
         ctx.fillStyle =
           "#06100a";
 
-        const eyeOffset =
-          cell * .22;
 
         let eye1;
         let eye2;
@@ -1720,30 +2071,38 @@ function drawSnake() {
         if (direction.x !== 0) {
 
           eye1 = {
+
             x:
               x +
               cell / 2 +
-              direction.x * cell * .20,
+              direction.x *
+              cell * .20,
 
             y:
               y +
               cell * .32
+
           };
 
+
           eye2 = {
+
             x:
               x +
               cell / 2 +
-              direction.x * cell * .20,
+              direction.x *
+              cell * .20,
 
             y:
               y +
               cell * .68
+
           };
 
         } else {
 
           eye1 = {
+
             x:
               x +
               cell * .32,
@@ -1751,10 +2110,14 @@ function drawSnake() {
             y:
               y +
               cell / 2 +
-              direction.y * cell * .20
+              direction.y *
+              cell * .20
+
           };
 
+
           eye2 = {
+
             x:
               x +
               cell * .68,
@@ -1762,12 +2125,16 @@ function drawSnake() {
             y:
               y +
               cell / 2 +
-              direction.y * cell * .20
+              direction.y *
+              cell * .20
+
           };
+
         }
 
 
         ctx.beginPath();
+
 
         ctx.arc(
           eye1.x,
@@ -1777,6 +2144,7 @@ function drawSnake() {
           Math.PI * 2
         );
 
+
         ctx.arc(
           eye2.x,
           eye2.y,
@@ -1785,8 +2153,10 @@ function drawSnake() {
           Math.PI * 2
         );
 
+
         ctx.fill();
       }
+
     }
   );
 }
@@ -1798,8 +2168,9 @@ function drawSnake() {
 
 function draw() {
 
-  if (!canvas)
+  if (!canvas) {
     return;
+  }
 
 
   drawBackground();
@@ -1817,32 +2188,52 @@ function draw() {
 
 
 /* =========================================================
-   AUDIO
+   AUDIO CONTEXT
    ========================================================= */
 
 function initAudio() {
 
-  if (!audioCtx) {
+  try {
 
-    const AudioContext =
-      window.AudioContext ||
-      window.webkitAudioContext;
+    if (!audioCtx) {
 
-    if (!AudioContext)
-      return;
+      const AudioContext =
+        window.AudioContext ||
+        window.webkitAudioContext;
 
-    audioCtx =
-      new AudioContext();
-  }
 
-  if (
-    audioCtx.state ===
-    "suspended"
-  ) {
-    audioCtx.resume();
+      if (!AudioContext) {
+        return;
+      }
+
+
+      audioCtx =
+        new AudioContext();
+    }
+
+
+    if (
+      audioCtx.state ===
+      "suspended"
+    ) {
+
+      audioCtx.resume()
+        .catch(() => {});
+    }
+
+  } catch (error) {
+
+    console.log(
+      "Lỗi Audio:",
+      error
+    );
   }
 }
 
+
+/* =========================================================
+   ÂM THANH ĂN MỒI
+   ========================================================= */
 
 function playEat() {
 
@@ -1850,69 +2241,90 @@ function playEat() {
     !eatSoundToggle ||
     !eatSoundToggle.checked
   ) {
+
     return;
   }
 
+
   initAudio();
 
-  if (!audioCtx)
+
+  if (!audioCtx) {
     return;
+  }
 
 
-  const oscillator =
-    audioCtx.createOscillator();
+  try {
 
-  const gain =
-    audioCtx.createGain();
-
-
-  oscillator.type =
-    "sine";
-
-  oscillator.frequency.setValueAtTime(
-    520,
-    audioCtx.currentTime
-  );
-
-  oscillator.frequency.exponentialRampToValueAtTime(
-    850,
-    audioCtx.currentTime + 0.08
-  );
+    const oscillator =
+      audioCtx.createOscillator();
 
 
-  gain.gain.setValueAtTime(
-    0.0001,
-    audioCtx.currentTime
-  );
-
-  gain.gain.exponentialRampToValueAtTime(
-    0.12,
-    audioCtx.currentTime + 0.01
-  );
-
-  gain.gain.exponentialRampToValueAtTime(
-    0.0001,
-    audioCtx.currentTime + 0.12
-  );
+    const gain =
+      audioCtx.createGain();
 
 
-  oscillator.connect(gain);
-
-  gain.connect(
-    audioCtx.destination
-  );
+    oscillator.type =
+      "sine";
 
 
-  oscillator.start();
+    oscillator.frequency.setValueAtTime(
+      520,
+      audioCtx.currentTime
+    );
 
-  oscillator.stop(
-    audioCtx.currentTime + 0.13
-  );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+      850,
+      audioCtx.currentTime + 0.08
+    );
+
+
+    gain.gain.setValueAtTime(
+      0.0001,
+      audioCtx.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.12,
+      audioCtx.currentTime + 0.01
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      audioCtx.currentTime + 0.12
+    );
+
+
+    oscillator.connect(gain);
+
+
+    gain.connect(
+      audioCtx.destination
+    );
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+      audioCtx.currentTime + 0.13
+    );
+
+  } catch (error) {
+
+    console.log(
+      "Lỗi âm thanh ăn mồi:",
+      error
+    );
+  }
 }
 
 
 /* =========================================================
-   NHẠC NỀN
+   NHẠC NỀN CHILL
    ========================================================= */
 
 function startMusic() {
@@ -1921,101 +2333,63 @@ function startMusic() {
     !musicToggle ||
     !musicToggle.checked
   ) {
+
     return;
   }
 
-  if (musicTimer)
-    return;
 
-  initAudio();
+  try {
 
-  if (!audioCtx)
-    return;
+    backgroundMusic.volume =
+      0.25;
 
 
-  const notes = [
-    261.63,
-    329.63,
-    392.00,
-    329.63,
-    293.66,
-    349.23,
-    440.00,
-    349.23
-  ];
-
-  let index = 0;
+    const playPromise =
+      backgroundMusic.play();
 
 
-  musicTimer =
-    setInterval(() => {
+    if (playPromise) {
 
-      if (
-        !running ||
-        paused ||
-        !musicToggle.checked
-      ) {
-        return;
-      }
+      playPromise.catch(
+        () => {
 
+          console.log(
+            "Trình duyệt chặn tự động phát nhạc. Hãy bấm Bắt đầu."
+          );
 
-      const osc =
-        audioCtx.createOscillator();
-
-      const gain =
-        audioCtx.createGain();
-
-
-      osc.type =
-        "triangle";
-
-      osc.frequency.value =
-        notes[index % notes.length];
-
-
-      gain.gain.setValueAtTime(
-        0.0001,
-        audioCtx.currentTime
+        }
       );
+    }
 
-      gain.gain.exponentialRampToValueAtTime(
-        0.025,
-        audioCtx.currentTime + 0.02
-      );
+  } catch (error) {
 
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        audioCtx.currentTime + 0.22
-      );
-
-
-      osc.connect(gain);
-
-      gain.connect(
-        audioCtx.destination
-      );
-
-
-      osc.start();
-
-      osc.stop(
-        audioCtx.currentTime + 0.24
-      );
-
-
-      index++;
-
-    }, 420);
+    console.log(
+      "Lỗi nhạc nền:",
+      error
+    );
+  }
 }
 
 
+/* =========================================================
+   DỪNG NHẠC
+   ========================================================= */
+
 function stopMusic() {
 
-  clearInterval(
-    musicTimer
-  );
+  try {
 
-  musicTimer = null;
+    backgroundMusic.pause();
+
+    backgroundMusic.currentTime = 0;
+
+  } catch (error) {
+
+    console.log(
+      "Lỗi dừng nhạc:",
+      error
+    );
+  }
 }
 
 
@@ -2037,7 +2411,7 @@ function vibrate(ms) {
 
 
 /* =========================================================
-   CÀI ĐẶT
+   NÚT CÀI ĐẶT
    ========================================================= */
 
 if (gearBtn) {
@@ -2071,7 +2445,7 @@ if (closeSettings) {
 
 
 /* =========================================================
-   ĐỔI TỐC ĐỘ
+   TỐC ĐỘ
    ========================================================= */
 
 if (speedRange) {
@@ -2082,8 +2456,11 @@ if (speedRange) {
 
       updateSpeedUI();
 
+
       if (running) {
+
         scheduleLoop();
+
       }
 
     }
@@ -2106,22 +2483,25 @@ if (backgroundSelect) {
         backgroundSelect.value
       );
 
+
       generateObstacles();
 
       spawnFood();
 
       draw();
 
+
       showToast(
         `🌍 Bối cảnh: ${getBackground().name}`
       );
+
     }
   );
 }
 
 
 /* =========================================================
-   ĐỔI MỨC ĐỘ
+   ĐỔI MỨC CHƯỚNG NGẠI VẬT
    ========================================================= */
 
 if (obstacleLevel) {
@@ -2135,15 +2515,18 @@ if (obstacleLevel) {
         obstacleLevel.value
       );
 
+
       generateObstacles();
 
       spawnFood();
 
       draw();
 
+
       showToast(
         `🧱 Chướng ngại vật: ${getObstacleAmount().name}`
       );
+
     }
   );
 }
@@ -2171,7 +2554,7 @@ if (obstacleToggle) {
 
 
 /* =========================================================
-   ÂM THANH
+   NHẠC NỀN BẬT / TẮT
    ========================================================= */
 
 if (musicToggle) {
@@ -2182,11 +2565,14 @@ if (musicToggle) {
 
       if (musicToggle.checked) {
 
+        initAudio();
+
         startMusic();
 
       } else {
 
         stopMusic();
+
       }
 
     }
@@ -2195,7 +2581,49 @@ if (musicToggle) {
 
 
 /* =========================================================
-   RESTART
+   ÂM THANH ĂN MỒI
+   ========================================================= */
+
+if (eatSoundToggle) {
+
+  eatSoundToggle.addEventListener(
+    "change",
+    () => {
+
+      if (eatSoundToggle.checked) {
+
+        initAudio();
+
+      }
+
+    }
+  );
+}
+
+
+/* =========================================================
+   RUNG
+   ========================================================= */
+
+if (vibrateToggle) {
+
+  vibrateToggle.addEventListener(
+    "change",
+    () => {
+
+      if (vibrateToggle.checked) {
+
+        vibrate(30);
+
+      }
+
+    }
+  );
+}
+
+
+/* =========================================================
+   RESTART GAME
    ========================================================= */
 
 if (restartBtn) {
@@ -2204,32 +2632,47 @@ if (restartBtn) {
     "click",
     () => {
 
+      clearInterval(timer);
+
+      stopMusic();
+
+
       score = 0;
 
       level = 1;
 
+      eaten = 0;
+
       levelStartScore = 0;
 
+
       resetGame();
+
 
       settings.classList.remove(
         "show"
       );
 
+
       messageIcon.textContent =
         "🐍";
+
 
       messageTitle.textContent =
         "Rắn săn mồi";
 
+
       messageText.textContent =
         "Ăn mồi, lớn lên và vượt qua tất cả các màn!";
+
 
       startBtn.textContent =
         "Bắt đầu";
 
+
       startBtn.onclick =
         startGame;
+
 
       message.classList.remove(
         "hidden"
@@ -2246,12 +2689,15 @@ if (restartBtn) {
 
 function loadSettings() {
 
+  /* Bối cảnh */
+
   if (backgroundSelect) {
 
     const savedBackground =
       localStorage.getItem(
         "snakeBackground"
       );
+
 
     if (
       savedBackground &&
@@ -2264,12 +2710,15 @@ function loadSettings() {
   }
 
 
+  /* Mức chướng ngại vật */
+
   if (obstacleLevel) {
 
     const savedObstacleLevel =
       localStorage.getItem(
         "snakeObstacleLevel"
       );
+
 
     if (
       savedObstacleLevel &&
@@ -2289,7 +2738,31 @@ function loadSettings() {
 
 
 /* =========================================================
-   KHỞI TẠO
+   KHI ĐÓNG TAB / RỜI TRANG
+   ========================================================= */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if (
+      document.hidden &&
+      running
+    ) {
+
+      paused = true;
+
+      showToast(
+        "⏸ Game đã tạm dừng"
+      );
+    }
+
+  }
+);
+
+
+/* =========================================================
+   KHỞI TẠO GAME
    ========================================================= */
 
 loadSettings();
@@ -2297,6 +2770,9 @@ loadSettings();
 resetGame();
 
 resizeCanvas();
+
+
+/* NÚT BẮT ĐẦU */
 
 startBtn.onclick =
   startGame;
